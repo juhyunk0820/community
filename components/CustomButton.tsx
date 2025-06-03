@@ -40,8 +40,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    paddingVertical: 4,
-    marginHorizontal: 30,
   },
   labelText: {
     color: colors.WHITE,
