@@ -1,9 +1,18 @@
-import { SafeAreaView, Text, View } from "react-native";
+import FeedList from "@/components/FeedList";
+import { colors } from "@/constants";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView>
-      <Text>홈 화면</Text>
+    <SafeAreaView style={styels.container}>
+      <FeedList />
     </SafeAreaView>
   );
 }
+
+const styels = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.WHITE,
+  },
+});

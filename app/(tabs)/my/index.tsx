@@ -1,8 +1,11 @@
 import CustomButton from "@/components/CustomButton";
-import { router } from "expo-router";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { router, useFocusEffect } from "expo-router";
+import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 export default function MyScreen() {
+  useFocusEffect(() => {
+    router.replace("/auth");
+  });
   return (
     <SafeAreaView style={styles.container}>
       <CustomButton
