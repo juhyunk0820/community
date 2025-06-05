@@ -1,8 +1,10 @@
-import { postLogin, postSignup } from "@/api/auth";
+import { getMe, postLogin, postSignup } from "@/api/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { saveSecureStore } from "@/utils/secureStore";
-import { setHeader } from "@/utils/header";
+import { removeSecureStore, saveSecureStore } from "@/utils/secureStore";
+import { removeHeader, setHeader } from "@/utils/header";
+import queryClient from "@/api/queryClient";
+import { useEffect } from "react";
 
 function useSignup() {
   return useMutation({
@@ -22,16 +24,38 @@ function useLogin() {
     onSuccess: async ({ accessToken }) => {
       setHeader("Authorization", `Bearer ${accessToken}`);
       await saveSecureStore("accessToken", accessToken);
-      router.replace("/(tabs)");
+      queryClient.fetchQuery({
+        queryKey: ["auth", "getMe"],
+      });
+      router.replace("/");
     },
   });
 }
 
+function useGetMe() {
+  const { data, isError } = useQuery({
+    queryFn: getMe,
+    queryKey: ["auth", "getMe"],
+  });
+
+  useEffect(() => {
+    if (isError) {
+      removeHeader("Authorization");
+      removeSecureStore("accessToken");
+    }
+  }, [isError]);
+  return { data };
+}
+
 function useAuth() {
+  const { data } = useGetMe();
   const loginMutation = useLogin();
   const signupMutation = useSignup();
 
   return {
+    auth: {
+      id: data?.id ?? "",
+    },
     loginMutation,
     signupMutation,
   };
