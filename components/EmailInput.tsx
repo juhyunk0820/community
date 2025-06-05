@@ -4,7 +4,7 @@ import InputField from "./InputField";
 import { colors } from "@/constants";
 
 function EmailInput() {
-  const { control } = useFormContext();
+  const { control, setFocus } = useFormContext();
   return (
     <Controller
       name="email"
@@ -25,6 +25,11 @@ function EmailInput() {
           placeholder="이메일을 입력해주세요"
           placeholderTextColor={colors.GRAY_500}
           value={value}
+          autoFocus
+          inputMode="email"
+          submitBehavior="submit"
+          onSubmitEditing={() => setFocus("password")}
+          returnKeyType="next"
           onChangeText={onChange}
           error={error?.message}
         />
