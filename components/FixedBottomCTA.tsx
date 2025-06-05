@@ -15,7 +15,7 @@ function FixedBottomCTA({ label, onPress }: FixedBottomCTAProps) {
     <View
       style={[styles.buttonContainer, { paddingBottom: insets.bottom || 12 }]}
     >
-      <CustomButton label="회원가입" onPress={onPress} />
+      <CustomButton label={label} onPress={onPress} />
     </View>
   );
 }
