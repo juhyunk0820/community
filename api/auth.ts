@@ -1,8 +1,6 @@
-import { getSecureStore } from "@/utils/secureStore";
-import axiosInstance from "./axios";
 import { Profile } from "@/types";
-
-// Function to handle user login
+import axiosInstance from "./axios";
+import { getSecureStore } from "@/utils/secureStore";
 
 type RequestUser = {
   email: string;
@@ -10,29 +8,22 @@ type RequestUser = {
 };
 
 async function postSignup(body: RequestUser): Promise<void> {
-  const { data } = await axiosInstance.post("/auth/signup", body, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const { data } = await axiosInstance.post("/auth/signup", body);
 
   return data;
 }
 
 async function postLogin(body: RequestUser): Promise<{ accessToken: string }> {
-  const { data } = await axiosInstance.post("/auth/signin", body, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const { data } = await axiosInstance.post("/auth/signin", body);
+
   return data;
 }
 
 async function getMe(): Promise<Profile> {
-  const accessToken = getSecureStore("accessToken");
+  const accessToken = await getSecureStore("accessToken");
+
   const { data } = await axiosInstance.get("/auth/me", {
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
   });
