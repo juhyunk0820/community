@@ -6,32 +6,6 @@ import { removeHeader, setHeader } from "@/utils/header";
 import queryClient from "@/api/queryClient";
 import { useEffect } from "react";
 
-function useSignup() {
-  return useMutation({
-    mutationFn: postSignup,
-    onSuccess: (data) => {
-      router.replace("/auth/login");
-    },
-    onError: (error) => {
-      console.error("Signup failed:", error);
-    },
-  });
-}
-
-function useLogin() {
-  return useMutation({
-    mutationFn: postLogin,
-    onSuccess: async ({ accessToken }) => {
-      setHeader("Authorization", `Bearer ${accessToken}`);
-      await saveSecureStore("accessToken", accessToken);
-      queryClient.fetchQuery({
-        queryKey: ["auth", "getMe"],
-      });
-      router.replace("/");
-    },
-  });
-}
-
 function useGetMe() {
   const { data, isError } = useQuery({
     queryFn: getMe,
@@ -44,7 +18,33 @@ function useGetMe() {
       removeSecureStore("accessToken");
     }
   }, [isError]);
+
   return { data };
+}
+
+function useSignup() {
+  return useMutation({
+    mutationFn: postSignup,
+    onSuccess: () => router.replace("/auth/login"),
+    onError: () => {
+      //
+    },
+  });
+}
+
+function useLogin() {
+  return useMutation({
+    mutationFn: postLogin,
+    onSuccess: async ({ accessToken }) => {
+      setHeader("Authorization", `Bearer ${accessToken}`);
+      await saveSecureStore("accessToken", accessToken);
+      queryClient.fetchQuery({ queryKey: ["auth", "getMe"] });
+      router.replace("/");
+    },
+    onError: () => {
+      //
+    },
+  });
 }
 
 function useAuth() {
@@ -52,12 +52,20 @@ function useAuth() {
   const loginMutation = useLogin();
   const signupMutation = useSignup();
 
+  const logout = () => {
+    removeHeader("Authorization");
+    removeSecureStore("accessToken");
+    queryClient.resetQueries({ queryKey: ["auth"] });
+  };
+
   return {
     auth: {
       id: data?.id ?? "",
+      nickname: data?.nickname ?? "",
     },
     loginMutation,
     signupMutation,
+    logout,
   };
 }
 
