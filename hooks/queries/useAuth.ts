@@ -1,16 +1,32 @@
 import { getMe, postLogin, postSignup } from "@/api/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { removeSecureStore, saveSecureStore } from "@/utils/secureStore";
+import {
+  getSecureStore,
+  removeSecureStore,
+  saveSecureStore,
+} from "@/utils/secureStore";
 import { removeHeader, setHeader } from "@/utils/header";
 import queryClient from "@/api/queryClient";
 import { useEffect } from "react";
 
 function useGetMe() {
-  const { data, isError } = useQuery({
+  const { data, isError, isSuccess } = useQuery({
     queryFn: getMe,
     queryKey: ["auth", "getMe"],
   });
+
+  useEffect(() => {
+    (async () => {
+      if (isSuccess) {
+        await getSecureStore("accessToken").then((accessToken) => {
+          setHeader("Authorization", `Bearer ${accessToken}`);
+        });
+      } else {
+        removeHeader("Authorization");
+      }
+    })();
+  }, [isSuccess]);
 
   useEffect(() => {
     if (isError) {
