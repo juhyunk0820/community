@@ -1,92 +1,45 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import FeedItem from "./FeedItem";
 import { colors } from "@/constants";
 import useGetInfinitePosts from "@/hooks/queries/useGetInfinitePosts";
-
-// const dummyData = [
-//   {
-//     id: 1,
-//     userId: 1,
-//     title: "뿌룽",
-//     description:
-//       "뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종",
-//     author: {
-//       id: 1,
-//       nickname: "홍길동",
-//     },
-//     imageUris: [],
-//     likes: [],
-//     hasVote: true,
-//     voteCount: 1,
-//     commentCount: 2,
-//     viewCount: 2,
-//     createdAt: "2023년10월1일",
-//   },
-//   {
-//     id: 2,
-//     userId: 1,
-//     title: "뿌룽",
-//     description:
-//       "뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종",
-//     author: {
-//       id: 1,
-//       nickname: "홍길동",
-//     },
-//     imageUris: [],
-//     likes: [],
-//     hasVote: true,
-//     voteCount: 1,
-//     commentCount: 2,
-//     viewCount: 2,
-//     createdAt: "2023년10월1일",
-//   },
-//   {
-//     id: 3,
-//     userId: 1,
-//     title: "뿌룽",
-//     description:
-//       "뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종",
-//     author: {
-//       id: 1,
-//       nickname: "홍길동",
-//     },
-//     imageUris: [],
-//     likes: [],
-//     hasVote: true,
-//     voteCount: 1,
-//     commentCount: 2,
-//     viewCount: 2,
-//     createdAt: "2023년10월1일",
-//   },
-//   {
-//     id: 4,
-//     userId: 1,
-//     title: "뿌룽",
-//     description:
-//       "뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종뿌지지직 대한민국 썹종",
-//     author: {
-//       id: 1,
-//       nickname: "홍길동",
-//     },
-//     imageUris: [],
-//     likes: [],
-//     hasVote: true,
-//     voteCount: 1,
-//     commentCount: 2,
-//     viewCount: 2,
-//     createdAt: "2023년10월1일",
-//   },
-// ];
+import { useScrollToTop } from "@react-navigation/native";
 
 function FeedList() {
-  const { data: posts } = useGetInfinitePosts();
+  const {
+    data: posts,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useGetInfinitePosts();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const ref = useRef<FlatList | null>(null);
+  useScrollToTop(ref);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  };
+
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <FlatList
+      ref={ref}
       data={posts?.pages.flat()}
       renderItem={({ item }) => <FeedItem post={item} />}
       keyExtractor={(item) => String(item.id)}
       contentContainerStyle={styles.contentContainer}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.5}
+      refreshing={isRefreshing}
+      onRefresh={handleRefresh}
     />
   );
 }
