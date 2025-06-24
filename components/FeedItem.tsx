@@ -4,16 +4,43 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Octicons, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { Post } from "@/types";
 import Profile from "./Profile";
+import useAuth from "@/hooks/queries/useAuth";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import useDeletePost from "@/hooks/queries/useDeletePost";
+import { router } from "expo-router";
 
 interface FeedItemProps {
   post: Post;
 }
 
 function FeedItem({ post }: FeedItemProps) {
-  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const { auth } = useAuth();
+  const likeUsers = post.likes?.map((like) => Number(like.userId));
+  const isLiked = likeUsers?.includes(Number(auth?.id));
+  const { showActionSheetWithOptions } = useActionSheet();
+  const deletePost = useDeletePost();
 
-  const pressLike = () => {
-    setIsLiked(!isLiked);
+  const handlePressOption = () => {
+    const options = ["삭제", "수정", "취소"];
+    const cancelButtonIndex = 2; // 취소 버튼 인덱스
+    const destructiveButtonIndex = 0; // 삭제 버튼 인덱스
+    showActionSheetWithOptions(
+      { options, cancelButtonIndex, destructiveButtonIndex },
+      (selectedIndex?: number) => {
+        switch (selectedIndex) {
+          case destructiveButtonIndex: //삭제
+            deletePost.mutate(post.id);
+            break;
+          case 1: //수정
+            router.push(`/post/update/${post.id}`);
+            break;
+          case cancelButtonIndex: //취소
+            break;
+          default:
+            break;
+        }
+      }
+    );
   };
 
   return (
@@ -23,6 +50,16 @@ function FeedItem({ post }: FeedItemProps) {
           imageUri={post.author.imageUri}
           nickname={post.author.nickname}
           createdAt={post.createdAt}
+          option={
+            auth?.id === post.author.id && (
+              <Ionicons
+                name="ellipsis-vertical"
+                size={20}
+                color={colors.BLACK}
+                onPress={handlePressOption}
+              />
+            )
+          }
           onPress={() => {}}
         />
         <Text style={styles.title}>{post.title}</Text>
@@ -31,17 +68,14 @@ function FeedItem({ post }: FeedItemProps) {
         </Text>
       </View>
       <View style={styles.menuContainer}>
-        <Pressable
-          style={({ pressed }) => [styles.menu, pressed && styles.pressed]}
-          onPress={pressLike}
-        >
+        <Pressable style={styles.menu}>
           <Octicons
             name={isLiked ? "heart-fill" : "heart"}
             size={16}
             color={isLiked ? colors.ORANGE_600 : colors.BLACK}
           />
           <Text style={isLiked ? styles.activeMenuText : styles.menuText}>
-            {post.voteCount}
+            {post.likes.length || "좋아요"}
           </Text>
         </Pressable>
         <Pressable style={[styles.menu, styles.pressed]}>
@@ -49,7 +83,7 @@ function FeedItem({ post }: FeedItemProps) {
             name="comment-processing-outline"
             color={colors.BLACK}
           />
-          <Text style={styles.menuText}>{post.commentCount}</Text>
+          <Text style={styles.menuText}>{post.commentCount || "댓글"}</Text>
         </Pressable>
         <Pressable style={[styles.menu, styles.pressed]}>
           <Ionicons name="eye-outline" size={16} color={colors.BLACK} />
