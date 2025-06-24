@@ -1,14 +1,13 @@
 import CustomButton from "@/components/CustomButton";
 import DescriptionInput from "@/components/DescriptionInput";
 import TitleInput from "@/components/TitleInput";
-import useCreatePost from "@/hooks/queries/useCreatePost";
 import useGetPost from "@/hooks/queries/useGetPost";
 import useUpdatePost from "@/hooks/queries/useUpdatePost";
 import { ImageUri } from "@/types";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 type FormValues = {
@@ -54,7 +53,7 @@ export default function PostUpdateScreen() {
         />
       ),
     });
-  }, []);
+  });
 
   return (
     <FormProvider {...postForm}>
