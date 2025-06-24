@@ -6,6 +6,7 @@ import queryClient from "@/api/queryClient";
 import Toast, { ToastConfig } from "react-native-toast-message";
 import useAuth from "@/hooks/queries/useAuth";
 import { useEffect } from "react";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -18,10 +19,12 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <RootNavigator />
-      <Toast />
-    </QueryClientProvider>
+    <ActionSheetProvider>
+      <QueryClientProvider client={queryClient}>
+        <RootNavigator />
+        <Toast />
+      </QueryClientProvider>
+    </ActionSheetProvider>
   );
 }
 
