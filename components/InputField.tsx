@@ -1,5 +1,5 @@
 import { colors } from "@/constants";
-import React, { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef, ReactNode } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,12 +10,19 @@ import {
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
-  variant?: "standard" | "outlined" | "filled";
+  variant?: "filled" | "standard" | "outlined";
   error?: string;
+  rightChild?: ReactNode;
 }
 
 function InputField(
-  { label, variant = "filled", error, ...props }: InputFieldProps,
+  {
+    label,
+    variant = "filled",
+    error = "",
+    rightChild = null,
+    ...props
+  }: InputFieldProps,
   ref?: ForwardedRef<TextInput>
 ) {
   return (
@@ -23,7 +30,7 @@ function InputField(
       {label && <Text style={styles.label}>{label}</Text>}
       <View
         style={[
-          styles.inputContainer,
+          styles.container,
           styles[variant],
           props.multiline && styles.multiLine,
           Boolean(error) && styles.inputError,
@@ -31,12 +38,14 @@ function InputField(
       >
         <TextInput
           ref={ref}
+          placeholderTextColor={colors.GRAY_500}
           style={styles.input}
           autoCapitalize="none"
           spellCheck={false}
           autoCorrect={false}
           {...props}
         />
+        {rightChild}
       </View>
       {Boolean(error) && <Text style={styles.error}>{error}</Text>}
     </View>
@@ -44,41 +53,41 @@ function InputField(
 }
 
 const styles = StyleSheet.create({
-  label: {
-    color: colors.GRAY_700,
-    fontSize: 12,
-    marginBottom: 5,
-  },
-  inputContainer: {
+  container: {
     height: 44,
     borderRadius: 8,
-    padding: 10,
+    paddingHorizontal: 10,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
   },
-  standard: {},
-  outlined: {},
+  label: {
+    fontSize: 12,
+    color: colors.GRAY_700,
+    marginBottom: 5,
+  },
   filled: {
     backgroundColor: colors.GRAY_100,
   },
+  standard: {},
+  outlined: {},
   input: {
     fontSize: 16,
     padding: 0,
     flex: 1,
   },
   error: {
-    color: colors.RED_500,
     fontSize: 12,
     marginTop: 5,
+    color: colors.RED_500,
   },
   inputError: {
     backgroundColor: colors.RED_100,
   },
   multiLine: {
     alignItems: "flex-start",
-    height: 200,
     paddingVertical: 10,
+    height: 200,
   },
 });
 
