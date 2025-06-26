@@ -1,5 +1,5 @@
 import { colors } from "@/constants";
-import React, { useState } from "react";
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Octicons, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { Post } from "@/types";
@@ -11,9 +11,10 @@ import { router } from "expo-router";
 
 interface FeedItemProps {
   post: Post;
+  isDetail?: boolean;
 }
 
-function FeedItem({ post }: FeedItemProps) {
+function FeedItem({ post, isDetail = false }: FeedItemProps) {
   const { auth } = useAuth();
   const likeUsers = post.likes?.map((like) => Number(like.userId));
   const isLiked = likeUsers?.includes(Number(auth?.id));
@@ -43,8 +44,16 @@ function FeedItem({ post }: FeedItemProps) {
     );
   };
 
+  const handlePressFeed = () => {
+    if (!isDetail) {
+      router.push(`/post/${post.id}`);
+    }
+  };
+
+  const ContainerComponent = isDetail ? View : Pressable;
+
   return (
-    <View style={styles.container}>
+    <ContainerComponent style={styles.container} onPress={handlePressFeed}>
       <View style={styles.contentContainer}>
         <Profile
           imageUri={post.author.imageUri}
@@ -90,7 +99,7 @@ function FeedItem({ post }: FeedItemProps) {
           <Text style={styles.menuText}>{post.viewCount}</Text>
         </Pressable>
       </View>
-    </View>
+    </ContainerComponent>
   );
 }
 
