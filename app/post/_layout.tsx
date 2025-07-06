@@ -1,5 +1,4 @@
 import { Link, router, Stack } from "expo-router";
-import "react-native-reanimated";
 import { colors } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { Pressable } from "react-native";
@@ -20,7 +19,7 @@ export default function PostLayout() {
           title: "글쓰기",
           headerShown: true,
           headerLeft: () => (
-            <Link href={"/"} replace style={{ paddingRight: 5 }}>
+            <Link href={"/"} replace>
               <Feather name="arrow-left" size={28} color={"black"} />
             </Link>
           ),
@@ -52,7 +51,7 @@ export default function PostLayout() {
               name="arrow-left"
               size={28}
               color={"black"}
-              onPress={router.back}
+              onPress={() => router.back()}
             />
           ),
         }}
