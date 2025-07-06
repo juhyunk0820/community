@@ -2,10 +2,10 @@ import { colors } from "@/constants";
 import React from "react";
 import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
-interface CustomBtnProps extends PressableProps {
+interface CustomButtonProps extends PressableProps {
   label: string;
-  size?: "small" | "large";
-  variant?: "standard" | "outlined" | "filled";
+  size?: "medium" | "large";
+  variant?: "standard" | "filled";
 }
 
 function CustomButton({
@@ -13,7 +13,7 @@ function CustomButton({
   size = "large",
   variant = "filled",
   ...props
-}: CustomBtnProps) {
+}: CustomButtonProps) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -24,60 +24,35 @@ function CustomButton({
       ]}
       {...props}
     >
-      <Text style={[styles.labelText, styles[`${variant}Text`]]}>{label}</Text>
+      <Text style={styles[variant]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
-  },
-  labelText: {
-    color: colors.WHITE,
-    fontSize: 16,
-    fontWeight: "600",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
   },
   large: {
     width: "100%",
     height: 44,
   },
-  small: {
-    width: "50%",
-    height: 36,
-  },
+  medium: {},
   filled: {
     backgroundColor: colors.ORANGE_600,
-  },
-  outlined: {
-    backgroundColor: colors.WHITE,
-    borderWidth: 1,
-    borderColor: colors.ORANGE_600,
-  },
-  standard: {
-    backgroundColor: "transparent",
-  },
-  filledText: {
     fontSize: 14,
     fontWeight: "bold",
     color: colors.WHITE,
   },
-  outlinedText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: colors.ORANGE_600,
-  },
-  standardText: {
+  standard: {
     fontSize: 14,
     fontWeight: "bold",
     color: colors.ORANGE_600,
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.8,
   },
 });
 
