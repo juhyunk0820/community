@@ -1,5 +1,5 @@
 import { colors } from "@/constants";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -43,6 +43,12 @@ function PostWriteFooter() {
     <View style={[styles.container, { paddingBottom: inset.bottom }]}>
       <Pressable style={styles.footerIcon} onPress={handleOpenImagePicker}>
         <Ionicons name={"camera"} size={20} color={colors.BLACK} />
+      </Pressable>
+      <Pressable
+        style={styles.footerIcon}
+        onPress={() => setValue("isVoteOpen", true)}
+      >
+        <MaterialCommunityIcons name="vote" size={20} color={colors.BLACK} />
       </Pressable>
     </View>
   );
