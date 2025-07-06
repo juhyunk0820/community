@@ -1,39 +1,48 @@
 import { colors } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import useUploadImages from "@/hooks/queries/useUploadImages";
 import { getFormDataImages } from "@/utils/image";
+import { useFormContext, useWatch } from "react-hook-form";
 
 function PostWriteFooter() {
-  const insets = useSafeAreaInsets();
+  const inset = useSafeAreaInsets();
+  const { control, setValue } = useFormContext();
+  const [imageUris] = useWatch({ control, name: ["imageUris"] });
   const uploadImages = useUploadImages();
 
-  const handleOpenImagePick = async () => {
+  const addImageUris = (uris: string[]) => {
+    if (imageUris.length + uris.length > 5) {
+      Alert.alert("이미지 개수 초과", "추가 가능한 이미지는 최대 5개입니다.");
+      return;
+    }
+
+    setValue("imageUris", [...imageUris, ...uris.map((uri) => ({ uri: uri }))]);
+  };
+
+  const handleOpenImagePicker = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
-      allowsMultipleSelection: true, //여러장 선택 옵션
+      allowsMultipleSelection: true,
     });
 
     if (result.canceled) {
-      // 사용자가 선택을 취소한 경우
       return;
     }
-    const formData = getFormDataImages("images", result.assets);
 
+    const formData = getFormDataImages("images", result.assets);
     uploadImages.mutate(formData, {
-      onSuccess: (data: string[]) => {
-        console.log("data", data);
-      },
+      onSuccess: (data: string[]) => addImageUris(data),
     });
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <Pressable style={styles.footerIcon} onPress={handleOpenImagePick}>
-        <Ionicons name="camera" size={20} color={colors.BLACK} />
+    <View style={[styles.container, { paddingBottom: inset.bottom }]}>
+      <Pressable style={styles.footerIcon} onPress={handleOpenImagePicker}>
+        <Ionicons name={"camera"} size={20} color={colors.BLACK} />
       </Pressable>
     </View>
   );
