@@ -1,14 +1,15 @@
-import CustomButton from "@/components/CustomButton";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FormProvider, useForm } from "react-hook-form";
+import { StyleSheet } from "react-native";
 import DescriptionInput from "@/components/DescriptionInput";
-import PostWriteFooter from "@/components/PostWriteFooter";
 import TitleInput from "@/components/TitleInput";
 import useCreatePost from "@/hooks/queries/useCreatePost";
 import { ImageUri } from "@/types";
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import CustomButton from "@/components/CustomButton";
+import PostWriteFooter from "@/components/PostWriteFooter";
+import ImagePreviewList from "@/components/ImagePreviewList";
 
 type FormValues = {
   title: string;
@@ -16,7 +17,7 @@ type FormValues = {
   imageUris: ImageUri[];
 };
 
-export default function WritePostScreen() {
+export default function PostWriteScreen() {
   const navigation = useNavigation();
   const createPost = useCreatePost();
   const postForm = useForm<FormValues>({
@@ -28,6 +29,7 @@ export default function WritePostScreen() {
   });
 
   const onSubmit = (formValues: FormValues) => {
+    console.log("postForm", postForm.watch().imageUris);
     createPost.mutate(formValues);
   };
 
@@ -35,20 +37,21 @@ export default function WritePostScreen() {
     navigation.setOptions({
       headerRight: () => (
         <CustomButton
-          label="작성"
-          size="small"
+          label="저장"
+          size="medium"
           variant="standard"
           onPress={postForm.handleSubmit(onSubmit)}
         />
       ),
     });
-  }, []);
+  });
 
   return (
     <FormProvider {...postForm}>
       <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <TitleInput />
         <DescriptionInput />
+        <ImagePreviewList imageUris={postForm.watch().imageUris} />
       </KeyboardAwareScrollView>
 
       <PostWriteFooter />
