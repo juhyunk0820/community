@@ -25,8 +25,8 @@ export default function PostDetailScreen() {
   const createComment = useCreateComment();
   const [content, setContent] = useState("");
   const scrollRef = useRef<ScrollView | null>(null);
-  const [parentCommentId, setParentCommentId] = useState<number | null>(null);
   const inputRef = useRef<TextInput | null>(null);
+  const [parentCommentId, setParentCommentId] = useState<number | null>(null);
 
   if (isPending || isError) {
     return <></>;
@@ -39,7 +39,6 @@ export default function PostDetailScreen() {
 
   const handleCancelReply = () => {
     setParentCommentId(null);
-    inputRef.current?.blur();
     Keyboard.dismiss();
   };
 
@@ -48,6 +47,12 @@ export default function PostDetailScreen() {
       postId: post.id,
       content: content,
     };
+    if (parentCommentId) {
+      createComment.mutate({ ...commentData, parentCommentId });
+      setContent("");
+      handleCancelReply();
+      return;
+    }
 
     if (parentCommentId) {
       createComment.mutate({ ...commentData, parentCommentId });
@@ -84,11 +89,10 @@ export default function PostDetailScreen() {
             {post.comments?.map((comment) => (
               <Fragment key={comment.id}>
                 <CommentItem
-                  key={comment.id}
-                  comment={comment}
                   parentCommentId={parentCommentId}
                   onReply={() => handleReply(comment.id)}
                   onCancelReply={handleCancelReply}
+                  comment={comment}
                 />
                 {comment.replies.map((reply) => (
                   <CommentItem key={reply.id} comment={reply} isReply />
@@ -105,7 +109,7 @@ export default function PostDetailScreen() {
               onSubmitEditing={handleSubmitComment}
               onChangeText={(text) => setContent(text)}
               placeholder={
-                parentCommentId ? "답글 작성중..." : "댓글을 남겨보세요."
+                parentCommentId ? "답글 남기는중..." : "댓글을 남겨보세요."
               }
               rightChild={
                 <Pressable
