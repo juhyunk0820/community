@@ -4,17 +4,22 @@ import { StyleSheet } from "react-native";
 import DescriptionInput from "@/components/DescriptionInput";
 import TitleInput from "@/components/TitleInput";
 import useCreatePost from "@/hooks/queries/useCreatePost";
-import { ImageUri } from "@/types";
+import { ImageUri, VoteOption } from "@/types";
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 import CustomButton from "@/components/CustomButton";
 import PostWriteFooter from "@/components/PostWriteFooter";
 import ImagePreviewList from "@/components/ImagePreviewList";
+import VoteModal from "@/components/VoteModal";
+import VoteAttached from "@/components/VoteAttached";
 
 type FormValues = {
   title: string;
   description: string;
   imageUris: ImageUri[];
+  isVoteOpen: boolean;
+  isVoteAttached: boolean;
+  voteOptions: VoteOption[];
 };
 
 export default function PostWriteScreen() {
@@ -25,6 +30,14 @@ export default function PostWriteScreen() {
       title: "",
       description: "",
       imageUris: [],
+      isVoteOpen: false,
+      isVoteAttached: false,
+      voteOptions: [
+        {
+          displayPriority: 0,
+          content: "",
+        },
+      ],
     },
   });
 
@@ -51,10 +64,12 @@ export default function PostWriteScreen() {
       <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <TitleInput />
         <DescriptionInput />
+        <VoteAttached />
         <ImagePreviewList imageUris={postForm.watch().imageUris} />
       </KeyboardAwareScrollView>
 
       <PostWriteFooter />
+      <VoteModal />
     </FormProvider>
   );
 }
