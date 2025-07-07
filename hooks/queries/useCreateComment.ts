@@ -8,6 +8,10 @@ function useCreateComment() {
     mutationFn: createComment,
     onSuccess: (postId: number) => {
       queryClient.invalidateQueries({
+        //추가설정
+        queryKey: [queryKeys.POST, queryKeys.GET_POSTS],
+      });
+      queryClient.invalidateQueries({
         queryKey: [queryKeys.POST, queryKeys.GET_POST, postId],
       });
     },
