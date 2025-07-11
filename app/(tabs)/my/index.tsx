@@ -1,18 +1,23 @@
 import { baseUrls } from "@/api/axios";
 import AuthRoute from "@/components/AuthRoute";
 import CustomButton from "@/components/CustomButton";
+import LikedFeedList from "@/components/LikedFeedList";
+import MyFeedList from "@/components/MyFeedList";
 import Tab from "@/components/Tab";
 import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import PagerView from "react-native-pager-view";
 
 export default function MyScreen() {
   const { auth } = useAuth();
-  const [currentTab, setCurrentTab] = useState<0 | 1>(0);
+  const [currentTab, setCurrentTab] = useState<number>(0);
+  const pagerRef = useRef<PagerView | null>(null);
 
-  const handleTabPress = (tabIndex: 0 | 1) => {
+  const handleTabPress = (tabIndex: number) => {
     setCurrentTab(tabIndex);
+    pagerRef.current?.setPage(tabIndex);
   };
 
   return (
@@ -49,13 +54,23 @@ export default function MyScreen() {
       </View>
 
       <View style={styles.tabContainer}>
-        <Tab isActive={currentTab === 0} onPress={() => setCurrentTab(0)}>
-          게시물
+        <Tab isActive={currentTab === 0} onPress={() => handleTabPress(0)}>
+          게시글
         </Tab>
-        <Tab isActive={currentTab === 1} onPress={() => setCurrentTab(1)}>
-          게시물
+        <Tab isActive={currentTab === 1} onPress={() => handleTabPress(1)}>
+          좋아한 게시글
         </Tab>
       </View>
+      <PagerView
+        initialPage={0}
+        style={{ flex: 1 }}
+        ref={pagerRef}
+        onPageSelected={(e) => setCurrentTab(e.nativeEvent.position)}
+      >
+        <MyFeedList key="1" />
+        <LikedFeedList key="2" />
+        {/* Add more tabs as needed */}
+      </PagerView>
     </AuthRoute>
   );
 }
