@@ -8,6 +8,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import InputField from "./InputField";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import useDeleteComment from "@/hooks/queries/useDeleteComment";
+import { router } from "expo-router";
 
 interface CommentItemProps {
   comment: Comment;
@@ -78,7 +79,11 @@ function CommentItem({
           imageUri={comment.isDeleted ? "" : comment.user.imageUri}
           nickname={comment.isDeleted ? "(삭제)" : comment.user.nickname}
           createdAt={comment.createdAt}
-          onPress={() => {}}
+          onPress={() => {
+            if (!comment.isDeleted) {
+              router.push(`/profile/${comment.user.id}`);
+            }
+          }}
           option={
             auth.id === comment.user.id &&
             !comment.isDeleted && (
