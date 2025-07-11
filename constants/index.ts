@@ -22,6 +22,9 @@ const queryKeys = {
   POST: "post",
   GET_POST: "getPost",
   GET_POSTS: "getPosts",
+  GET_LIKED_POSTS: "getLikedPosts",
+  GET_MY_POSTS: "getMyPosts",
+  GET_USER_PROFILE: "getUserProfile",
 };
 
 export { colors, queryKeys };
