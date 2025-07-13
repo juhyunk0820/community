@@ -72,7 +72,7 @@ export default function EditProfileScreen() {
               right: 0,
               bottom: 0,
             }}
-            onPress={() => {}}
+            onPress={() => router.push("/my/avatar")}
           />
         </View>
         <View style={styles.inputContainer}>
