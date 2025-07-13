@@ -4,7 +4,7 @@ import Tab from "@/components/Tab";
 import { colors } from "@/constants";
 import useAuth from "@/hooks/queries/useAuth";
 import useGetAvatarItems from "@/hooks/queries/useGetAvatarItems";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { FlatList, Platform, StyleSheet, View } from "react-native";
 import PagerView from "react-native-pager-view";
@@ -44,11 +44,14 @@ export default function AvatarScreen() {
 
   const handleSaveAvatar = () => {
     editProfileMutation.mutate(avatarItem, {
-      onSuccess: () =>
+      onSuccess: () => {
         Toast.show({
           type: "success",
-          text1: "아바타 저장 완료",
-        }),
+          text1: "아바타가 저장되었습니다.",
+          position: "top",
+        });
+        router.back();
+      },
     });
   };
 
